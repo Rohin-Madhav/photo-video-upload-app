@@ -1,18 +1,19 @@
-const express = require("express")
-const app = express()
-const cors = require("cors")
+const express = require("express");
+const cors = require("cors");
+const app = express();
+const connectDB = require("./config/db");
+const mediaRoutes = require("./routes/mediaRoutes");
 
-const PORT = process.env.PORT || 3000
+connectDB();
 
-app.use(express.json())
-app.use(express.urlencoded({extended:true}))
-app.use(cors())
+const PORT = process.env.PORT || 3000;
 
-app.get("/",(req,res)=>{
-    res.send("HELLO NOPOJJ")
-})
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 
-app.listen(PORT,()=>{
-    console.log(`Server is running : ${PORT}`);
-    
-})
+app.use("/api/media", mediaRoutes);
+
+app.listen(PORT, () => {
+  console.log(`Server is running : ${PORT}`);
+});
