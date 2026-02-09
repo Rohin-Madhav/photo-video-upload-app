@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const mediaSchema = new mongoose.Schema(
   {
-    //  What is it? (Broad category)
+    //  (Broad category)
     category: {
       type: String,
       required: true,
@@ -26,6 +26,14 @@ const mediaSchema = new mongoose.Schema(
       type: String, // e.g., '.jpg', '.mp4'
       required: true,
       lowercase: true,
+    },
+    isDeleted: {
+      type: Boolean, // for soft delete
+      default: false,
+    },
+    deletedAt: {
+      type: Date,
+      default: null,
     },
     originalName: String, // Helpful for downloads
   },
