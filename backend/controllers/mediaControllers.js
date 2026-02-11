@@ -4,32 +4,34 @@ const path = require("path");
 
 exports.uploadMedia = async (req, res) => {
   try {
-    if (!req.file) {
+    const file = req.file || (Array.isArray(req.files) && req.files[0]);
+
+    if (!file) {
       return res.status(400).json({ message: "No file uploaded" });
     }
 
-    const result = await cloudinary.uploader.upload(req.file.path, {
+    const result = await cloudinary.uploader.upload(file.path, {
       resource_type: "auto",
       folder: "media",
     });
 
-    const fileExtension = path.extname(req.file.originalname).slice(1);
+    const fileExtension = path.extname(file.originalname || "").slice(1);
 
-    const category = req.file.mimetype.startsWith("image")
+    const category = file.mimetype && file.mimetype.startsWith("image")
       ? "image"
-      : req.file.mimetype.startsWith("video")
+      : file.mimetype && file.mimetype.startsWith("video")
         ? "video"
         : "other";
 
     const media = await Media.create({
       fileName: result.public_id,
-      originalName: req.file.originalname,
+      originalName: file.originalname,
       mediaType: result.resource_type,
-      mimeType: req.file.mimetype,
+      mimeType: file.mimetype,
       fileExtension,
       category,
       fileUrl: result.secure_url,
-      fileSize: req.file.size,
+      fileSize: file.size,
     });
 
     res.status(201).json({
