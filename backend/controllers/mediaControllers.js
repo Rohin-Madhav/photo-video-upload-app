@@ -17,11 +17,12 @@ exports.uploadMedia = async (req, res) => {
 
     const fileExtension = path.extname(file.originalname || "").slice(1);
 
-    const category = file.mimetype && file.mimetype.startsWith("image")
-      ? "image"
-      : file.mimetype && file.mimetype.startsWith("video")
-        ? "video"
-        : "other";
+    const category =
+      file.mimetype && file.mimetype.startsWith("image")
+        ? "image"
+        : file.mimetype && file.mimetype.startsWith("video")
+          ? "video"
+          : "other";
 
     const media = await Media.create({
       fileName: result.public_id,
@@ -45,7 +46,9 @@ exports.uploadMedia = async (req, res) => {
 
 exports.getAllMedia = async (req, res) => {
   try {
-    const mediaFiles = await Media.find({}).sort({ createdAt: -1 });
+    const mediaFiles = await Media.find({
+      $or: [{ isDeleted: false }, { isDeleted: { $exists: false } }],
+    }).sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,
